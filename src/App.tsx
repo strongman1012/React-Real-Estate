@@ -32,12 +32,12 @@ const App: FC = () => {
           <PublicRoute path="/register" component={Register} />
           <PublicRoute path="/forgot-password" component={ForgotPassword} />
           <ProtectedRoute path="/" exact component={() => <Home />} />
-          <ProtectedRoute path="/a-area-1" component={() => <Area1 />} />
-          <ProtectedRoute path="/a-area-2" component={() => <Area2 />} />
-          <ProtectedRoute path="/a-area-3" component={() => <Area3 />} />
-          <ProtectedRoute path="/a-area-4" component={() => <Area4 />} />
-          <ProtectedRoute path="/a-area-5" component={() => <Area5 />} />
-          <ProtectedRoute path="/a-area-6" component={() => <Area6 />} />
+          <ProtectedRoute path="/b-area-1" component={() => <Area1 />} />
+          <ProtectedRoute path="/b-area-2" component={() => <Area2 />} />
+          <ProtectedRoute path="/b-area-3" component={() => <Area3 />} />
+          <ProtectedRoute path="/b-area-4" component={() => <Area4 />} />
+          <ProtectedRoute path="/b-area-5" component={() => <Area5 />} />
+          <ProtectedRoute path="/b-area-6" component={() => <Area6 />} />
         </Switch>
       </div>
     </Router>
