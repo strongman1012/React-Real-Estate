@@ -12,8 +12,6 @@ export const initializeAuth = () => (dispatch: AppDispatch) => {
 
     if (user) {
         dispatch(loginSuccess({ token: token as string }));
-    } else {
-        dispatch(logoutSuccess());
     }
 };
 
