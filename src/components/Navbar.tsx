@@ -24,7 +24,7 @@ const Navbar: FC = () => {
 
     useEffect(() => {
         dispatch(fetchAreaLists());
-    }, [dispatch]);
+    }, [dispatch, auth]);
 
     const handleMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
