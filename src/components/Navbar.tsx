@@ -23,10 +23,8 @@ const Navbar: FC = () => {
     const areaLists = useSelector((state: RootState) => state.areaList.areaLists);
 
     useEffect(() => {
-        if (auth) {
-            dispatch(fetchAreaLists(auth.role_id));
-        }
-    }, [dispatch, auth]);
+        dispatch(fetchAreaLists());
+    }, [dispatch]);
 
     const handleMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);

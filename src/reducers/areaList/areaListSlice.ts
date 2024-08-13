@@ -37,9 +37,9 @@ const areaListSlice = createSlice({
 
 export const { resetAreaLists, setAreaLists, selectedAreaLists, updateAreaList } = areaListSlice.actions;
 
-export const fetchAreaLists = (roleId: number) => async (dispatch: AppDispatch) => {
+export const fetchAreaLists = () => async (dispatch: AppDispatch) => {
     try {
-        const response = await fetchAreaListsAPI(roleId);
+        const response = await fetchAreaListsAPI();
         dispatch(setAreaLists(response));
     } catch (error: any) {
         console.error('Error fetching area lists:', error.response?.data?.message || error.message);

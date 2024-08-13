@@ -21,8 +21,8 @@ export interface ApplicationAreaList {
     data: AreaList[];
 }
 
-export const fetchAreaListsAPI = async (roleId: number): Promise<ApplicationAreaList[]> => {
-    const response = await apiClient.get<ApplicationAreaList[]>(`/areaList/getUserAreas/${roleId}`);
+export const fetchAreaListsAPI = async (): Promise<ApplicationAreaList[]> => {
+    const response = await apiClient.get<ApplicationAreaList[]>(`/areaList/getUserAreas`);
     return response.data;
 };
 export const getAreaListsAPI = async (roleId: number): Promise<any> => {
