@@ -62,27 +62,27 @@ const routes: RouteObject[] = [
                 element: <Home />
             },
             {
-                path: 'a-area-1',
+                path: 'b-area-1',
                 element: <Area1 />,
             },
             {
-                path: 'a-area-2',
+                path: 'b-area-2',
                 element: <Area2 />,
             },
             {
-                path: 'a-area-3',
+                path: 'b-area-3',
                 element: <Area3 />,
             },
             {
-                path: 'a-area-4',
+                path: 'b-area-4',
                 element: <Area4 />,
             },
             {
-                path: 'a-area-5',
+                path: 'b-area-5',
                 element: <Area5 />,
             },
             {
-                path: 'a-area-6',
+                path: 'b-area-6',
                 element: <Area6 />,
             },
         ],
