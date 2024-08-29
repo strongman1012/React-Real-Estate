@@ -88,37 +88,34 @@ export const {
 } = authSlice.actions;
 
 export const login = (credentials: { email: string; password: string }) => async (dispatch: AppDispatch) => {
-    dispatch(loginStart());
     try {
         const response = await loginAPI(credentials);
         dispatch(loginSuccess({ token: response.token }));
         return response.message;
     } catch (error: any) {
         dispatch(loginFailure());
-        throw error.response?.data?.message || error.message;
+        const err_message = error.response?.data?.message || error.message;
+        return err_message;
     }
 };
 
 export const register = (userInfo: { userName: string; email: string; password: string }) => async (dispatch: AppDispatch) => {
-    dispatch(registerStart());
     try {
         const response = await registerAPI(userInfo);
-        dispatch(registerSuccess());
         return response.message;
     } catch (error: any) {
-        dispatch(registerFailure());
-        throw error.response?.data?.message || error.message;
+        const err_message = error.response?.data?.message || error.message;
+        return err_message;
     }
 };
 
 export const forgotPassword = (info: { email: string }) => async (dispatch: AppDispatch) => {
-    dispatch(forgotPasswordStart());
     try {
         await forgotPasswordAPI(info);
-        dispatch(forgotPasswordSuccess());
+        return null;
     } catch (error: any) {
-        dispatch(forgotPasswordFailure());
-        throw error.response?.data?.message || error.message;
+        const err_message = error.response?.data?.message || error.message;
+        return err_message;
     }
 };
 
@@ -129,6 +126,7 @@ export const logout = () => async (dispatch: AppDispatch) => {
         dispatch(logoutSuccess());
         dispatch(resetAreaLists());
     }
+    return response.message;
 };
 
 export default authSlice.reducer;

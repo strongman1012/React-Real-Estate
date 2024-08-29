@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import { TextField, Button, Container, Typography, Box, Snackbar, Alert } from '@mui/material';
-import { Link, useHistory } from 'react-router-dom';
+import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import LoadingScreen from '../Basic/LoadingScreen';
+import AlertModal from '../Basic/Alert';
 import * as Yup from 'yup';
 import { register } from '../../reducers/auth/authSlice';
 import { useAppDispatch } from '../../store/hooks';
 
 const Register: React.FC = () => {
     const dispatch = useAppDispatch();
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
-    const history = useHistory();
-
-    const handleSnackbarClose = () => {
-        setSnackbarOpen(false);
-    };
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
+    const [confirmTitle, setConfirmTitle] = useState<string>('');
+    const [confirmDescription, setConfirmDescription] = useState<string>('');
+    const navigate = useNavigate();
 
     // Validation schema
     const validationSchema = Yup.object({
@@ -35,121 +34,128 @@ const Register: React.FC = () => {
             confirmPassword: '',
         },
         validationSchema,
-        onSubmit: async (values, { setSubmitting }) => {
+        onSubmit: async (values) => {
+            setIsLoading(true);
             try {
                 const message = await dispatch(register(values));
-                setSnackbarMessage(message);
-                setSnackbarSeverity('success');
-                setSnackbarOpen(true);
-                history.push('/login');
+                if (message) {
+                    setConfirmTitle(message);
+                    setConfirmDescription('');
+                    setConfirmModalOpen(true);
+                    navigate('/login');
+                }
             } catch (error: any) {
-                setSnackbarMessage(error);
-                setSnackbarSeverity('error');
-                setSnackbarOpen(true);
+                setConfirmTitle(error.message);
+                setConfirmDescription('');
+                setConfirmModalOpen(true);
             } finally {
-                setSubmitting(false);
+                setIsLoading(false);
             }
         },
     });
 
     return (
-        <Container
-            maxWidth="xs"
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '90vh',
-                boxSizing: 'border-box',
-                overflow: 'hidden',
-            }}
-        >
-            <Box
+        <>
+            <Container
+                maxWidth="xs"
                 sx={{
-                    width: '100%',
-                    padding: 3,
-                    border: '1px solid #ddd',
-                    borderRadius: 2,
-                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '90vh',
                     boxSizing: 'border-box',
+                    overflow: 'hidden',
                 }}
             >
-                <Typography variant="h5" align="center" gutterBottom>
-                    Register
-                </Typography>
-                <form onSubmit={formik.handleSubmit}>
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        id="userName"
-                        name="userName"
-                        label="User Name"
-                        value={formik.values.userName}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.userName && Boolean(formik.errors.userName)}
-                        helperText={formik.touched.userName && formik.errors.userName}
-                    />
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        id="email"
-                        name="email"
-                        label="Email address"
-                        value={formik.values.email}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.email && Boolean(formik.errors.email)}
-                        helperText={formik.touched.email && formik.errors.email}
-                    />
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        id="password"
-                        name="password"
-                        label="Password"
-                        type="password"
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.password && Boolean(formik.errors.password)}
-                        helperText={formik.touched.password && formik.errors.password}
-                    />
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        label="Confirm Password"
-                        type="password"
-                        value={formik.values.confirmPassword}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
-                        helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
-                    />
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        fullWidth
-                        type="submit"
-                        disabled={formik.isSubmitting}
-                        sx={{ mt: 2 }}
-                    >
+                <LoadingScreen show={isLoading} />
+                <Box
+                    sx={{
+                        width: '100%',
+                        padding: 3,
+                        border: '1px solid #ddd',
+                        borderRadius: 2,
+                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                        boxSizing: 'border-box',
+                    }}
+                >
+                    <Typography variant="h5" align="center" gutterBottom color={'primary.main'}>
                         Register
-                    </Button>
-                </form>
-                <Typography align="center" sx={{ mt: 2 }}>
-                    <Link to="/login" style={{ textDecoration: 'none' }}>Already have an account? Login</Link>
-                </Typography>
-            </Box>
-            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
-        </Container>
+                    </Typography>
+                    <form onSubmit={formik.handleSubmit}>
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            id="userName"
+                            name="userName"
+                            label="User Name"
+                            value={formik.values.userName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.userName && Boolean(formik.errors.userName)}
+                            helperText={formik.touched.userName && formik.errors.userName}
+                        />
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            id="email"
+                            name="email"
+                            label="Email address"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                        />
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            id="password"
+                            name="password"
+                            label="Password"
+                            type="password"
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.password && Boolean(formik.errors.password)}
+                            helperText={formik.touched.password && formik.errors.password}
+                        />
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            type="password"
+                            value={formik.values.confirmPassword}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+                            helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+                        />
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            fullWidth
+                            type="submit"
+                            disabled={formik.isSubmitting}
+                            sx={{ mt: 2 }}
+                        >
+                            Register
+                        </Button>
+                    </form>
+                    <Typography align="center" sx={{ mt: 2 }}>
+                        <Link to="/login" style={{ textDecoration: 'none' }}>Already have an account? Login</Link>
+                    </Typography>
+                </Box>
+            </Container>
+            <AlertModal
+                show={confirmModalOpen}
+                onClose={() => setConfirmModalOpen(false)}
+                title={confirmTitle}
+                description={confirmDescription}
+            />
+        </>
     );
 };
 

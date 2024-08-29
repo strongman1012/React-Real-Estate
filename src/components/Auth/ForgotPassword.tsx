@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import { TextField, Button, Container, Typography, Box, Snackbar, Alert } from '@mui/material';
+import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
+import LoadingScreen from '../Basic/LoadingScreen';
+import AlertModal from '../Basic/Alert';
 import * as Yup from 'yup';
 import { forgotPassword } from '../../reducers/auth/authSlice';
 import { useAppDispatch } from '../../store/hooks';
 
 const ForgotPassword: React.FC = () => {
     const dispatch = useAppDispatch();
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
-
-    const handleSnackbarClose = () => {
-        setSnackbarOpen(false);
-    };
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
+    const [confirmTitle, setConfirmTitle] = useState<string>('');
+    const [confirmDescription, setConfirmDescription] = useState<string>('');
 
     // Validation schema
     const validationSchema = Yup.object({
@@ -26,82 +25,89 @@ const ForgotPassword: React.FC = () => {
             email: '',
         },
         validationSchema,
-        onSubmit: async (values, { setSubmitting }) => {
+        onSubmit: async (values) => {
+            setIsLoading(true);
             try {
-                await dispatch(forgotPassword(values));
-                setSnackbarMessage('Password reset link sent to your email');
-                setSnackbarSeverity('success');
-                setSnackbarOpen(true);
+                const message = await dispatch(forgotPassword(values));
+                if (message) {
+                    setConfirmTitle('Password reset link sent to your email');
+                    setConfirmDescription('');
+                    setConfirmModalOpen(true);
+                }
             } catch (error: any) {
-                setSnackbarMessage(error);
-                setSnackbarSeverity('error');
-                setSnackbarOpen(true);
+                setConfirmTitle(error.message);
+                setConfirmDescription('');
+                setConfirmModalOpen(true);
             } finally {
-                setSubmitting(false);
+                setIsLoading(false);
             }
         },
     });
 
     return (
-        <Container
-            maxWidth="xs"
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '90vh',
-                boxSizing: 'border-box',
-                overflow: 'hidden',
-            }}
-        >
-            <Box
+        <>
+            <Container
+                maxWidth="xs"
                 sx={{
-                    width: '100%',
-                    padding: 3,
-                    border: '1px solid #ddd',
-                    borderRadius: 2,
-                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '90vh',
                     boxSizing: 'border-box',
+                    overflow: 'hidden',
                 }}
             >
-                <Typography variant="h5" align="center" gutterBottom>
-                    Forgot Password
-                </Typography>
-                <form onSubmit={formik.handleSubmit}>
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        id="email"
-                        name="email"
-                        label="Email address"
-                        value={formik.values.email}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.email && Boolean(formik.errors.email)}
-                        helperText={formik.touched.email && formik.errors.email}
-                    />
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        fullWidth
-                        type="submit"
-                        disabled={formik.isSubmitting}
-                        sx={{ mt: 2 }}
-                    >
-                        Submit
-                    </Button>
-                </form>
-                <Typography align="center" sx={{ mt: 2 }}>
-                    <Link to="/login" style={{ textDecoration: 'none' }}>Back to Login</Link>
-                </Typography>
-            </Box>
-            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
-        </Container>
+                <LoadingScreen show={isLoading} />
+                <Box
+                    sx={{
+                        width: '100%',
+                        padding: 3,
+                        border: '1px solid #ddd',
+                        borderRadius: 2,
+                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                        boxSizing: 'border-box',
+                    }}
+                >
+                    <Typography variant="h5" align="center" gutterBottom color={'primary.main'}>
+                        Forgot Password
+                    </Typography>
+                    <form onSubmit={formik.handleSubmit}>
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            id="email"
+                            name="email"
+                            label="Email address"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                        />
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            fullWidth
+                            type="submit"
+                            disabled={formik.isSubmitting}
+                            sx={{ mt: 2 }}
+                        >
+                            Submit
+                        </Button>
+                    </form>
+                    <Typography align="center" sx={{ mt: 2 }}>
+                        <Link to="/login" style={{ textDecoration: 'none' }}>Back to Login</Link>
+                    </Typography>
+                </Box>
+            </Container>
+            <AlertModal
+                show={confirmModalOpen}
+                onClose={() => setConfirmModalOpen(false)}
+                title={confirmTitle}
+                description={confirmDescription}
+            />
+        </>
     );
 };
 

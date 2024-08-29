@@ -1,6 +1,6 @@
 import React from 'react';
 import Bullet, { Tooltip } from 'devextreme-react/bullet';
-import { service } from './data';
+import { service } from 'src/components/Dashboard/area-6/data';
 
 function customizeTooltip(arg: { value: number; target: number; }) {
     return {
@@ -8,7 +8,7 @@ function customizeTooltip(arg: { value: number; target: number; }) {
     };
 }
 
-function App() {
+function Area6() {
     return (
         <div id="chart-demo" style={{ width: '100%' }}>
             <div className="long-title"><h3>Daily temperature</h3></div>
@@ -45,4 +45,4 @@ function App() {
     );
 }
 
-export default App;
+export default Area6;

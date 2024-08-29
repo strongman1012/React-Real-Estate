@@ -6,7 +6,7 @@ import { RootState } from 'src/store/store';
 import { useAppDispatch } from '../../store/hooks';
 import Gallery from 'devextreme-react/gallery';
 import CheckBox, { CheckBoxTypes } from 'devextreme-react/check-box';
-import { gallery } from './data';
+import { gallery } from 'src/components/Dashboard/home/data';
 
 const Home: React.FC = () => {
     // State and hooks for authentication
