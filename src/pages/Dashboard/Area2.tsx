@@ -64,7 +64,7 @@ const Area2: FC = () => {
 
     const fetchLevel = async () => {
         try {
-            const area_name = "A_Area 1";
+            const area_name = "B_Area 2";
             const response = await apiClient.get<number>(`/getApplicationAreaAccessLevel/${area_name}`);
             setAccessLevel(response.data);
         } catch (error) {
