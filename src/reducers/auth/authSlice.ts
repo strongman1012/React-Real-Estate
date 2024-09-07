@@ -46,6 +46,12 @@ const authSlice = createSlice({
     },
 });
 
+export const {
+    loginSuccess,
+    loginFailure,
+    logoutSuccess,
+} = authSlice.actions;
+
 export const login = (credentials: { email: string; password: string }) => async (dispatch: AppDispatch) => {
     try {
         const response = await loginAPI(credentials);
