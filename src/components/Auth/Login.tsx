@@ -16,10 +16,19 @@ const Login: React.FC = () => {
     const [confirmDescription, setConfirmDescription] = useState<string>('');
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        if (token)
-            loginToken(token);
+        // Check if token exists in localStorage
+        const localStorageToken = localStorage.getItem('token');
+
+        // If no token in localStorage, check URL params for token
+        if (!localStorageToken) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            // If a token exists in URL params, call the loginToken function
+            if (token) {
+                loginToken(token);
+            }
+        }
     }, []);
 
     const loginToken = async (token: string) => {
