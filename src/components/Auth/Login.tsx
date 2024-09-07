@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import LoadingScreen from '../Basic/LoadingScreen';
 import AlertModal from '../Basic/Alert';
-import { login } from '../../reducers/auth/authSlice';
+import { login, loginWithToken } from '../../reducers/auth/authSlice';
 import { useAppDispatch } from '../../store/hooks';
 
 const Login: React.FC = () => {
@@ -15,6 +15,30 @@ const Login: React.FC = () => {
     const [confirmTitle, setConfirmTitle] = useState<string>('');
     const [confirmDescription, setConfirmDescription] = useState<string>('');
 
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        if (token)
+            loginToken(token);
+    }, []);
+
+    const loginToken = async (token: string) => {
+        setIsLoading(true);
+        try {
+            const message = await dispatch(loginWithToken(token));
+            if (message) {
+                setConfirmTitle(message);
+                setConfirmDescription('');
+                setConfirmModalOpen(true);
+            }
+        } catch (error: any) {
+            setConfirmTitle(error.message);
+            setConfirmDescription('');
+            setConfirmModalOpen(true);
+        } finally {
+            setIsLoading(false);
+        }
+    }
     // Validation schema
     const validationSchema = Yup.object({
         email: Yup.string().email('Invalid email address').required('Required'),
