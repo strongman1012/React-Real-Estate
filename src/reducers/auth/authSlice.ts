@@ -97,7 +97,6 @@ export const forgotPassword = (info: { email: string }) => async (dispatch: AppD
 };
 
 export const logout = () => async (dispatch: AppDispatch) => {
-    dispatch(logoutStart());
     const response = await logoutAPI();
     if (response) {
         dispatch(logoutSuccess());
