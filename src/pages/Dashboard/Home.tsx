@@ -1,84 +1,115 @@
-import React, { useCallback, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { logout } from 'src/reducers/auth/authSlice';
-import { Button, Stack, Typography } from '@mui/material';
-import { RootState } from 'src/store/store';
-import { useAppDispatch } from '../../store/hooks';
-import Gallery from 'devextreme-react/gallery';
-import CheckBox, { CheckBoxTypes } from 'devextreme-react/check-box';
-import { gallery } from 'src/components/Dashboard/home/data';
+import { useNavigate } from 'react-router-dom';
+import { Box, Container, Card, CardHeader, CardContent, Divider, Typography, Grid } from '@mui/material';
+import { RootState } from '../../store/store';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+import LoadingScreen from 'src/components/Basic/LoadingScreen';
+import { useAppDispatch } from 'src/store/hooks';
+import { setSidebarVisible } from 'src/reducers/areaList/areaListSlice';
 
-const Home: React.FC = () => {
-    // State and hooks for authentication
-    const user = useSelector((state: RootState) => state.auth.user);
+interface Application {
+    name: string;
+    url: string;
+}
+
+const Home: FC = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const areaLists = useSelector((state: RootState) => state.areaList.areaLists);
+    const [applications, setApplications] = useState<(Application | null)[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    // State and hooks for gallery options
-    const [loop, setLoop] = useState(true);
-    const [slideShow, setSlideShow] = useState(true);
-    const [showNavButtons, setShowNavButtons] = useState(true);
-    const [showIndicator, setShowIndicator] = useState(true);
+    useEffect(() => {
+        dispatch(setSidebarVisible(false));
+    }, [dispatch]);
 
-    const onLoopChanged = useCallback((data: CheckBoxTypes.ValueChangedEvent) => {
-        setLoop(data.value);
-    }, [setLoop]);
+    useEffect(() => {
+        const areaURLs = [
+            { name: "B_Area 1", url: "/dashboard/b-area-1" },
+            { name: "B_Area 2", url: "/dashboard/b-area-2" },
+            { name: "B_Area 3", url: "/dashboard/b-area-3" },
+            { name: "B_Area 4", url: "/dashboard/b-area-4" },
+            { name: "B_Area 5", url: "/dashboard/b-area-5" },
+            { name: "B_Area 6", url: "/dashboard/b-area-6" },
+        ];
+        const jwtToken = localStorage.getItem("token"); // Getting jwtToken
+        if (areaLists.length > 0) {
+            const temp_applications = areaLists.map(row => {
+                if (row.permission === true) {
+                    const area_names = row.data.map(area => area.area_name);
+                    if (row.application_name === "Application B")
+                        return {
+                            name: row.application_name, url: (areaURLs.find(item => item.name === area_names[0])?.url || '#')
+                        }
+                    else
+                        return {
+                            name: row.application_name, url: `${row.application_url}?token=${jwtToken}`
+                        }
+                }
+                return null;
+            }).filter(Boolean);
+            setApplications(temp_applications);
+            setIsLoading(false);
+        }
+    }, [areaLists]);
 
-    const onSlideShowChanged = useCallback((data: CheckBoxTypes.ValueChangedEvent) => {
-        setSlideShow(data.value);
-    }, [setSlideShow]);
-
-    const onShowNavButtonsChanged = useCallback((data: CheckBoxTypes.ValueChangedEvent) => {
-        setShowNavButtons(data.value);
-    }, [setShowNavButtons]);
-
-    const onShowIndicatorChanged = useCallback((data: CheckBoxTypes.ValueChangedEvent) => {
-        setShowIndicator(data.value);
-    }, [setShowIndicator]);
+    const handleCardClick = (app: Application | null) => {
+        if (app && app.name === "Application B") {
+            dispatch(setSidebarVisible(true));
+            navigate(app.url);
+        }
+        if (app && app.name !== "Application B") {
+            window.open(app.url, '_blank');
+        }
+    };
 
     return (
-        <Stack width="100%" boxSizing={'border-box'} padding={5}>
-            <Typography variant="h4">Home</Typography>
-            {user ? (
-                <>
-                    <Typography variant="body1">Welcome, {user.userName}</Typography>
-                    <Button variant="contained" style={{ width: '150px' }} color="secondary" onClick={() => dispatch(logout())}>
-                        Logout
-                    </Button>
-                </>
-            ) : (
-                <Typography variant="body1">You are not logged in.</Typography>
-            )}
-
-            {/* Gallery Section */}
-            <div className="widget-container" style={{ marginTop: '20px' }}>
-                <Gallery
-                    id="gallery"
-                    dataSource={gallery}
-                    height={300}
-                    slideshowDelay={slideShow ? 3000 : 0}
-                    loop={loop}
-                    showNavButtons={showNavButtons}
-                    showIndicator={showIndicator}
-                />
-            </div>
-
-            {/* Options Section */}
-            <div className="options" style={{ marginTop: '20px' }}>
-                <div className="caption">Options</div>
-                <div className="option">
-                    <CheckBox text="Loop mode" value={loop} onValueChanged={onLoopChanged} />
-                </div>
-                <div className="option">
-                    <CheckBox text="Slide show" value={slideShow} onValueChanged={onSlideShowChanged} />
-                </div>
-                <div className="option">
-                    <CheckBox text="Navigation buttons" value={showNavButtons} onValueChanged={onShowNavButtonsChanged} />
-                </div>
-                <div className="option">
-                    <CheckBox text="Indicator" value={showIndicator} onValueChanged={onShowIndicatorChanged} />
-                </div>
-            </div>
-        </Stack>
+        <Container maxWidth={false}>
+            <LoadingScreen show={isLoading} />
+            <Box sx={{ pt: 3 }}>
+                <Card variant="outlined">
+                    <CardHeader title="Home" />
+                    <Divider />
+                    <CardContent>
+                        <Grid container spacing={3} pt={2}>
+                            {applications.map((app, index) => (
+                                <Grid item xs={12} sm={6} md={3} xl={2} key={index}>
+                                    <Card
+                                        onClick={() => handleCardClick(app)}
+                                        sx={{
+                                            cursor: 'pointer',
+                                            transition: 'transform 0.2s',
+                                            '&:hover': {
+                                                transform: 'scale(1.05)',
+                                                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.12)'
+                                            }
+                                        }}
+                                    >
+                                        <CardContent style={{ textAlign: 'center' }}>
+                                            {app?.name === "System"
+                                                ? <SettingsIcon sx={{
+                                                    width: '60px', height: '60px', color: (theme) => `${theme.palette.primary.main}`,
+                                                    border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1
+                                                }} />
+                                                : <DisplaySettingsIcon sx={{
+                                                    width: '60px', height: '60px', color: (theme) => `${theme.palette.primary.main}`,
+                                                    border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1
+                                                }} />
+                                            }
+                                            <Typography variant="h6" component="div">
+                                                {app?.name}
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </CardContent>
+                </Card>
+            </Box>
+        </Container>
     );
 };
 

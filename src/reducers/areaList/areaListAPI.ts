@@ -18,11 +18,13 @@ export interface AreaList {
 export interface ApplicationAreaList {
     application_name: string;
     application_id: number;
+    application_url: string;
+    permission: boolean;
     data: AreaList[];
 }
 
-export const fetchAreaListsAPI = async (): Promise<ApplicationAreaList[]> => {
-    const response = await apiClient.get<ApplicationAreaList[]>(`/areaList/getUserAreas`);
+export const fetchUserAccessAPI = async (): Promise<any> => {
+    const response = await apiClient.get<any>(`/areaList/getUserAccess`);
     return response.data;
 };
 export const getAreaListsAPI = async (roleId: number): Promise<any> => {

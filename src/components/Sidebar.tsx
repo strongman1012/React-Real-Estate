@@ -2,7 +2,6 @@ import React, { FC, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'src/store/store';
-import { fetchAreaLists } from 'src/reducers/areaList/areaListSlice';
 import { useAppDispatch } from 'src/store/hooks';
 import { styled, Theme, CSSObject } from '@mui/material/styles';
 import { Box, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
@@ -29,7 +28,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
     overflowX: 'hidden',
     width: `calc(${theme.spacing(7)} + 1px)`,
     [theme.breakpoints.up('sm')]: {
-        width: `calc(${theme.spacing(8)} + 1px)`,
+        width: `calc(${theme.spacing(12)} + 1px)`,
     },
 });
 
@@ -62,10 +61,6 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
     const areaList = useSelector((state: RootState) => state.areaList.areaLists);
 
     useEffect(() => {
-        dispatch(fetchAreaLists());
-    }, [dispatch]);
-
-    useEffect(() => {
         if (areaList.length > 0) {
             setLoading(false);
             const items = areaList.filter(area => area.application_name === "Application B")[0].data.map(item => item.area_name);
@@ -82,7 +77,7 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                         sx: {
                             height: 'calc(100% - 48px) !important',
                             top: '48px !Important',
-                            borderRight: '1px solid #ddd',
+                            border: (theme) => `2px solid ${theme.palette.primary.main}`,
                             position: 'absolute',
                             zIndex: 1
                         }
@@ -94,8 +89,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 sx={{ minHeight: 48, px: 2.5 }}
                                 onClick={() => navigate('/dashboard/b-area-1')}
                             >
-                                <ListItemIcon>
-                                    <StarOutlineIcon />
+                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
+                                    <StarOutlineIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                 </ListItemIcon>
                                 <ListItemText primary="B_Area 1" />
                             </ListItemButton>
@@ -105,8 +100,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 sx={{ minHeight: 48, px: 2.5 }}
                                 onClick={() => navigate('/dashboard/b-area-2')}
                             >
-                                <ListItemIcon>
-                                    <StarOutlineIcon />
+                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
+                                    <StarOutlineIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                 </ListItemIcon>
                                 <ListItemText primary="B_Area 2" />
                             </ListItemButton>
@@ -116,8 +111,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 sx={{ minHeight: 48, px: 2.5 }}
                                 onClick={() => navigate('/dashboard/b-area-3')}
                             >
-                                <ListItemIcon>
-                                    <StarOutlineIcon />
+                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
+                                    <StarOutlineIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                 </ListItemIcon>
                                 <ListItemText primary="B_Area 3" />
                             </ListItemButton>
@@ -127,8 +122,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 sx={{ minHeight: 48, px: 2.5 }}
                                 onClick={() => navigate('/dashboard/b-area-4')}
                             >
-                                <ListItemIcon>
-                                    <StarOutlineIcon />
+                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
+                                    <StarOutlineIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                 </ListItemIcon>
                                 <ListItemText primary="B_Area 4" />
                             </ListItemButton>
@@ -138,8 +133,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 sx={{ minHeight: 48, px: 2.5 }}
                                 onClick={() => navigate('/dashboard/b-area-5')}
                             >
-                                <ListItemIcon>
-                                    <StarOutlineIcon />
+                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
+                                    <StarOutlineIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                 </ListItemIcon>
                                 <ListItemText primary="B_Area 5" />
                             </ListItemButton>
@@ -149,8 +144,8 @@ const DashboardSidebar: FC<DashboardSidebarProps> = ({ open }) => {
                                 sx={{ minHeight: 48, px: 2.5 }}
                                 onClick={() => navigate('/dashboard/b-area-6')}
                             >
-                                <ListItemIcon>
-                                    <StarOutlineIcon />
+                                <ListItemIcon sx={{ color: (theme) => `${theme.palette.primary.main}` }}>
+                                    <StarOutlineIcon sx={{ border: (theme) => `1px solid ${theme.palette.primary.main}`, borderRadius: 1 }} />
                                 </ListItemIcon>
                                 <ListItemText primary="B_Area 6" />
                             </ListItemButton>

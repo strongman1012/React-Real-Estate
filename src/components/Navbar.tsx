@@ -1,10 +1,13 @@
-import React, { FC, useState, MouseEvent } from 'react';
+import React, { FC, useState, MouseEvent, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import { useNavigate } from 'react-router-dom';
 import { Box, Toolbar, IconButton, Typography, Menu, MenuItem } from '@mui/material';
 import { AccountCircle, MenuOutlined } from '@mui/icons-material';
 import { useAppDispatch } from '../store/hooks';
 import { logout } from '../reducers/auth/authSlice';
+import { RootState } from "src/store/store";
+import { useSelector } from "react-redux";
+import { fetchUserAccess } from 'src/reducers/areaList/areaListSlice';
 
 interface DashboardNavbarProps {
     open: boolean;
@@ -15,6 +18,11 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
     const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const navigate = useNavigate();
+    const sidebarVisible = useSelector((state: RootState) => state.areaList.sidebarVisible);
+
+    useEffect(() => {
+        dispatch(fetchUserAccess());
+    }, [dispatch]);
 
     const handleMenu = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -26,18 +34,20 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
 
     return (
         <>
-            <AppBar elevation={0}>
+            <AppBar elevation={0} sx={{ border: 0 }}>
                 <Toolbar variant="dense">
-                    <IconButton
-                        color='inherit'
-                        aria-label='open sidebar'
-                        size='large'
-                        edge="start"
-                        sx={{ mr: 2 }}
-                        onClick={toggleSidebar}
-                    >
-                        <MenuOutlined />
-                    </IconButton>
+                    {sidebarVisible && (
+                        <IconButton
+                            color='inherit'
+                            aria-label='open sidebar'
+                            size='large'
+                            edge="start"
+                            sx={{ mr: 1, color: (theme) => `${theme.palette.primary.main}` }}
+                            onClick={toggleSidebar}
+                        >
+                            <MenuOutlined />
+                        </IconButton>
+                    )}
                     <IconButton
                         color="inherit"
                         onClick={() => navigate('/')}
@@ -46,8 +56,7 @@ const DashboardNavbar: FC<DashboardNavbarProps> = ({ open, toggleSidebar }) => {
                             variant="h6"
                             noWrap
                             component="div"
-                            color={'primary.contrastText'}
-                            sx={{ display: { xs: 'none', sm: 'block' } }}
+                            sx={{ color: (theme) => `${theme.palette.primary.dark}` }}
                         >
                             Application B
                         </Typography>
